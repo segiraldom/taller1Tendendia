@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Cambiar el título por el nombre de tu sistema -->
+  <title>Sistema ???</title>
+  <style>
+    /* ── Reset básico ── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: sans-serif;
+      background: #f4f6f8;
+      color: #333;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 1rem 2rem;
+    }
+
+    /* Personalizar el color del header con los colores de tu sistema */
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 500;
+    }
+
+    /* ── Navegación por secciones ── */
+    nav {
+      background: #34495e;
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem 2rem;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: #bdc3c7;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    nav button.active,
+    nav button:hover {
+      background: #2c3e50;
+      color: white;
+    }
+
+    /* ── Contenido principal ── */
+    main { padding: 2rem; }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .toolbar h2 { font-size: 1.1rem; font-weight: 500; }
+
+    /* ── Botones ── */
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .btn-primary  { background: #2980b9; color: white; }
+    .btn-danger   { background: #e74c3c; color: white; }
+    .btn-secondary{ background: #ecf0f1; color: #333;  }
+    .btn-sm       { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+
+    /* ── Tabla ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    th {
+      background: #ecf0f1;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #555;
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid #f0f0f0;
+      font-size: 0.9rem;
+    }
+
+    tr:hover td { background: #fafafa; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .modal h3 { margin-bottom: 1rem; font-size: 1rem; font-weight: 500; }
+
+    /* ── Formulario ── */
+    .form-group { margin-bottom: 0.9rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      color: #555;
+      margin-bottom: 0.3rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 3rem;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <!-- Cambiar el título y agregar un ícono representativo -->
+  <h1>??? Sistema</h1>
+</header>
+
+<!-- ── Navegación ── -->
+<nav>
+  <!--
+    Agregar un botón por cada entidad de tu sistema.
+    Ejemplo:
+    <button onclick="cambiarSeccion('clientes')"  id="tab-clientes">Clientes</button>
+    <button onclick="cambiarSeccion('productos')" id="tab-productos">Productos</button>
+  -->
+  <button onclick="cambiarSeccion('entidad1')" id="tab-entidad1">Entidad 1</button>
+  <button onclick="cambiarSeccion('entidad2')" id="tab-entidad2">Entidad 2</button>
+</nav>
+
+<!-- ── Contenido dinámico ── -->
+<main id="contenido"></main>
+
+<!-- ── Modal genérico ── -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-titulo"></h3>
+    <div id="modal-cuerpo"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary"   onclick="guardar()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─────────────────────────────────────────
+  // Configuración
+  // ─────────────────────────────────────────
+
+  // Verificar que el puerto coincida con el expuesto en docker-compose.yml
+  const API = 'http://localhost:5000';
+
+  let seccionActual = '';
+  let modoEdicion   = null;
+
+  // ─────────────────────────────────────────
+  // Navegación
+  // ─────────────────────────────────────────
+
+  function cambiarSeccion(seccion) {
+    seccionActual = seccion;
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + seccion).classList.add('active');
+    cargarDatos();
+  }
+
+  async function cargarDatos() {
+    // Si alguna sección necesita datos previos (ej: un select de clientes
+    // para el formulario de reservas), cargarlos aquí antes de renderizar.
+
+    const data = await fetch(`${API}/${seccionActual}`).then(r => r.json());
+    renderTabla(data);
+  }
+
+  // ─────────────────────────────────────────
+  // Render de tabla dinámica
+  // ─────────────────────────────────────────
+
+  function renderTabla(data) {
+    if (!data.length) {
+      document.getElementById('contenido').innerHTML = `
+        <div class="toolbar">
+          <h2>${seccionActual}</h2>
+          <button class="btn btn-primary" onclick="abrirModal()">+ Nuevo</button>
+        </div>
+        <div class="empty">No hay registros aún.</div>`;
+      return;
+    }
+
+    const cols = Object.keys(data[0]);
+
+    const filas = data.map(row => `
+      <tr>
+        ${cols.map(c => `<td>${renderCelda(c, row[c])}</td>`).join('')}
+        <td>
+          <button class="btn btn-primary btn-sm"
+            onclick='abrirModal(${JSON.stringify(row)})'>Editar</button>
+          <button class="btn btn-danger btn-sm"
+            onclick="eliminar(${row.id})">Eliminar</button>
+        </td>
+      </tr>`).join('');
+
+    document.getElementById('contenido').innerHTML = `
+      <div class="toolbar">
+        <h2>${seccionActual}</h2>
+        <button class="btn btn-primary" onclick="abrirModal()">+ Nuevo</button>
+      </div>
+      <table>
+        <thead>
+          <tr>${cols.map(c => `<th>${c}</th>`).join('')}<th></th></tr>
+        </thead>
+        <tbody>${filas}</tbody>
+      </table>`;
+  }
+
+  function renderCelda(col, val) {
+    // Personalizar el render de celdas especiales.
+    // Ejemplo para estados con badges de color:
+    // if (col === 'estado') return `<span class="badge badge-${val}">${val}</span>`;
+
+    if (val === null || val === undefined) return '—';
+    if (typeof val === 'boolean') return val ? 'Sí' : 'No';
+    return val;
+  }
+
+  // ─────────────────────────────────────────
+  // Modal
+  // ─────────────────────────────────────────
+
+  function abrirModal(row = null) {
+    modoEdicion = row;
+    document.getElementById('modal-titulo').textContent =
+      row ? `Editar registro` : `Nuevo registro`;
+    document.getElementById('modal-cuerpo').innerHTML = formulario(row);
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function cerrarModal() {
+    document.getElementById('modal').classList.remove('open');
+    modoEdicion = null;
+  }
+
+  function formulario(row) {
+    // Construir el formulario para cada sección.
+    // Usar los campos reales de las tablas.
+    // Ejemplo:
+    // if (seccionActual === 'clientes') return `
+    //   <div class="form-group">
+    //     <label>Nombre</label>
+    //     <input id="f-nombre" value="${row ? row.nombre : ''}">
+    //   </div>
+    //   <div class="form-group">
+    //     <label>Email</label>
+    //     <input id="f-email" type="email" value="${row ? row.email : ''}">
+    //   </div>`;
+
+    if (seccionActual === 'entidad1') return `
+      <div class="form-group">
+        <label>Campo 1</label>
+        <input id="f-campo1" value="${row ? row.campo1 ?? '' : ''}">
+      </div>
+      <div class="form-group">
+        <label>Campo 2</label>
+        <input id="f-campo2" value="${row ? row.campo2 ?? '' : ''}">
+      </div>`;
+
+    // Agregar formulario para entidad2 y demás secciones
+    return `<p>Formulario pendiente para: ${seccionActual}</p>`;
+  }
+
+  // ─────────────────────────────────────────
+  // CRUD
+  // ─────────────────────────────────────────
+
+  function leerFormulario() {
+    const v = id => document.getElementById(id)?.value;
+
+    // Retornar el objeto con los campos de cada sección.
+    // Ejemplo:
+    // if (seccionActual === 'clientes')
+    //   return { nombre: v('f-nombre'), email: v('f-email') };
+
+    if (seccionActual === 'entidad1')
+      return { campo1: v('f-campo1'), campo2: v('f-campo2') };
+
+    return {};
+  }
+
+  async function guardar() {
+    const body   = leerFormulario();
+    const url    = modoEdicion
+      ? `${API}/${seccionActual}/${modoEdicion.id}`
+      : `${API}/${seccionActual}`;
+    const method = modoEdicion ? 'PUT' : 'POST';
+
+    await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    cerrarModal();
+    cargarDatos();
+  }
+
+  async function eliminar(id) {
+    if (!confirm('¿Confirmas que deseas eliminar este registro?')) return;
+
+    await fetch(`${API}/${seccionActual}/${id}`, { method: 'DELETE' });
+    cargarDatos();
+  }
+
+  // ─────────────────────────────────────────
+  // Inicio — cargar la primera sección
+  // ─────────────────────────────────────────
+
+  // Cambiar 'entidad1' por el nombre de tu primera sección real
+  cambiarSeccion('entidad1');
+</script>
+</body>
+</html>
