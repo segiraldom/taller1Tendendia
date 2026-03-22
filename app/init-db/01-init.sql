@@ -17,12 +17,47 @@ CREATE TABLE "turno" (
   "cedula" varchar(20),
   "id_lugar" int,
   "posicion" int,
-  "fecha" datetime,
+  "fecha" TIMESTAMP,
   "estado" varchar(20)
 );
 
 COMMENT ON TABLE "turno" IS 'estado: pendiente | atendiendo | finalizado';
 
-ALTER TABLE "turno" ADD FOREIGN KEY ("cedula") REFERENCES "usuario" ("cedula") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "turno"
+ADD FOREIGN KEY ("cedula") REFERENCES "usuario" ("cedula");
 
-ALTER TABLE "turno" ADD FOREIGN KEY ("id_lugar") REFERENCES "lugar" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "turno"
+ADD FOREIGN KEY ("id_lugar") REFERENCES "lugar" ("id");
+
+--------------------------------------------------
+-- INSERTS USUARIO (mínimo 5)
+--------------------------------------------------
+
+INSERT INTO usuario VALUES
+('1001', 'Juan Perez', '3001234567', 'juan@mail.com', 'Calle 1'),
+('1002', 'Maria Gomez', '3002345678', 'maria@mail.com', 'Calle 2'),
+('1003', 'Carlos Ruiz', '3003456789', 'carlos@mail.com', 'Calle 3'),
+('1004', 'Ana Torres', '3004567890', 'ana@mail.com', 'Calle 4'),
+('1005', 'Luis Martinez', '3005678901', 'luis@mail.com', 'Calle 5');
+
+--------------------------------------------------
+-- INSERTS LUGAR (mínimo 5)
+--------------------------------------------------
+
+INSERT INTO lugar (nombre, tipo) VALUES
+('Consultorio 1', 'consulta'),
+('Consultorio 2', 'consulta'),
+('Farmacia', 'medicamentos'),
+('Caja 1', 'administrativo'),
+('Laboratorio 1', 'laboratorio');
+
+--------------------------------------------------
+-- INSERTS TURNO (mínimo 5)
+--------------------------------------------------
+
+INSERT INTO turno (cedula, id_lugar, posicion, fecha, estado) VALUES
+('1001', 1, 1, NOW(), 'pendiente'),
+('1002', 1, 2, NOW(), 'pendiente'),
+('1003', 3, 1, NOW(), 'atendiendo'),
+('1004', 4, 1, NOW(), 'finalizado'),
+('1005', 2, 1, NOW(), 'pendiente');
