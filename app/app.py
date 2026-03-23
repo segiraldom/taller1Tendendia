@@ -223,6 +223,70 @@ def obtener_tipos_lugar():
 
     return jsonify(tipos)
 
+@app.route("/turnos/visualizacion", methods=["GET"])
+def visualizar_turnos():
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    # Turnos en estado "atendiendo" con datos de usuario y lugar
+    cur.execute("""
+        SELECT t.tipo_lugar, t.posicion, u.nombre as usuario, l.nombre as lugar
+        FROM turno t
+        LEFT JOIN usuario u ON t.cedula = u.cedula
+        LEFT JOIN lugar l ON t.id_lugar = l.id
+        WHERE t.estado = 'atendiendo'
+        ORDER BY t.tipo_lugar, t.posicion
+    """)
+
+    atendiendo = cur.fetchall()
+
+    # Formatear número de turno y datos para la respuesta
+    atendiendo_formateado = []
+    for t in atendiendo:
+        prefijo = t["tipo_lugar"][:3].upper()
+        numero = f"{prefijo}{t['posicion']}"
+
+        atendiendo_formateado.append({
+            "turno": numero,
+            "usuario": t["usuario"],
+            "lugar": t["lugar"]
+        })
+
+    # Turnos en estado "pendiente" ordenados por tipo de lugar y posición 
+    cur.execute("""
+        SELECT DISTINCT ON (tipo_lugar)
+            tipo_lugar, posicion, cedula
+        FROM turno
+        WHERE estado = 'pendiente'
+        ORDER BY tipo_lugar, posicion ASC
+    """)
+
+    siguientes = cur.fetchall()
+
+    # Obtener nombres de usuario y formatear número de turno para la respuesta
+    siguientes_formateado = []
+    for t in siguientes:
+        cur.execute(
+            "SELECT nombre FROM usuario WHERE cedula = %s",
+            (t["cedula"],)
+        )
+        usuario = cur.fetchone()
+
+        prefijo = t["tipo_lugar"][:3].upper()
+        numero = f"{prefijo}{t['posicion']}"
+
+        siguientes_formateado.append({
+            "turno": numero,
+            "usuario": usuario["nombre"] if usuario else None
+        })
+
+    conn.close()
+
+    return jsonify({
+        "atendiendo": atendiendo_formateado,
+        "siguientes": siguientes_formateado
+    })
+
 # ─────────────────────────────────────────
 # Inicio
 # ─────────────────────────────────────────
