@@ -209,6 +209,20 @@ def crear_turno():
         "datos": turno
     }), 201
 
+# Ruta para obtener los tipos de lugar disponibles (sin duplicados)
+@app.route("/tipos-lugar", methods=["GET"])
+def obtener_tipos_lugar():
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("SELECT DISTINCT tipo FROM lugar")
+
+    tipos = [row[0] for row in cur.fetchall()]
+
+    conn.close()
+
+    return jsonify(tipos)
+
 # ─────────────────────────────────────────
 # Inicio
 # ─────────────────────────────────────────
