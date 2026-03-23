@@ -150,6 +150,64 @@ def eliminar_entidad1(id):
 # Implementar CRUD completo para una segunda entidad
 # Seguir la misma estructura de entidad1
 
+#Ruta para crear turno, recibe cedula y tipo_lugar, retorna numero de turno y datos del turno creado
+@app.route("/turno", methods=["POST"])
+def crear_turno():
+    data = request.get_json()
+
+    cedula = data["cedula"]
+    tipo_lugar = data["tipo_lugar"]
+
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    # Verificar usuario
+    cur.execute("SELECT * FROM usuario WHERE cedula = %s", (cedula,))
+    usuario = cur.fetchone()
+
+    if not usuario:
+        cur.execute(
+            "INSERT INTO usuario (cedula) VALUES (%s) RETURNING *",
+            (cedula,)
+        )
+
+    # Calcular posición por tipo de lugar
+    cur.execute(
+        """
+        SELECT COUNT(*) as total 
+        FROM turno 
+        WHERE tipo_lugar = %s AND estado = 'pendiente'
+        """,
+        (tipo_lugar,)
+    )
+
+    total = cur.fetchone()["total"]
+    posicion = total + 1
+
+    # Generar número de turno con las primeras 3 letras del tipo de lugar en mayúscula y la posición
+    prefijo = tipo_lugar[:3].upper()
+    numero_turno = f"{prefijo}-{posicion}"
+
+    # Crear turno
+    cur.execute(
+        """
+        INSERT INTO turno (cedula, tipo_lugar, posicion, fecha, estado)
+        VALUES (%s, %s, %s, NOW(), 'pendiente')
+        RETURNING *
+        """,
+        (cedula, tipo_lugar, posicion)
+    )
+
+    turno = cur.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "mensaje": "Turno generado",
+        "turno": numero_turno,
+        "datos": turno
+    }), 201
 
 # ─────────────────────────────────────────
 # Inicio
