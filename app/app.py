@@ -17,10 +17,10 @@ def get_conn():
     definidas en el archivo .env y mapeadas en docker-compose.yml.
     """
     return psycopg2.connect(
-        host=os.environ["NOMBRE DEL HOST"],
-        database=os.environ["NOMBRE DE LA DB"],
-        user=os.environ["USUARIO DE LA DB"],
-        password=os.environ["PASSWORD DEL USUARIO"],
+        host=os.environ["DB_HOST"],
+        database=os.environ["DB_NAME"],
+        user=os.environ["DB_USER"],
+        password=os.environ["DB_PASSWORD"],
     )
 
 # ─────────────────────────────────────────
@@ -39,79 +39,89 @@ def index():
     })
 
 # ─────────────────────────────────────────
-# ENTIDAD 1: completar nombre de la entidad
+# ENTIDAD 1: Usuario
 # ─────────────────────────────────────────
 
-# Reemplazar "entidad1" por el nombre real (ej: clientes, productos...)
-
-@app.route("/entidad1", methods=["GET"])
-def listar_entidad1():
-    """Retorna todos los registros de entidad1."""
+@app.route("/usuarios", methods=["GET"])
+def listar_usuarios():
     conn = get_conn()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    # Escribir la consulta SQL correcta
-    cur.execute("SELECT * FROM ???  ORDER BY id")
+    cur.execute("SELECT * FROM usuario ORDER BY cedula")
 
-    registros = cur.fetchall()
+    usuarios = cur.fetchall()
     conn.close()
-    return jsonify(registros)
+
+    return jsonify(usuarios)
 
 
-@app.route("/entidad1/<int:id>", methods=["GET"])
-def obtener_entidad1(id):
-    """Retorna un registro por su id. Retorna 404 si no existe."""
+@app.route("/usuarios/<string:cedula>", methods=["GET"])
+def obtener_usuario(cedula):
     conn = get_conn()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    # Completar la consulta con el nombre de tabla correcto
-    cur.execute("SELECT * FROM ??? WHERE id = %s", (id,))
+    cur.execute("SELECT * FROM usuario WHERE cedula = %s", (cedula,))
+    usuario = cur.fetchone()
 
-    registro = cur.fetchone()
     conn.close()
 
-    # ¿Qué debe retornar si el registro no existe?
-    if not registro:
-        return jsonify({"error": "???"}), ???
+    if not usuario:
+        return jsonify({"error": "Usuario no encontrado"}), 404
 
-    return jsonify(registro)
+    return jsonify(usuario)
 
-
-@app.route("/entidad1", methods=["POST"])
-def crear_entidad1():
-    """Crea un nuevo registro. Recibe JSON en el body."""
+@app.route("/usuarios", methods=["POST"])
+def crear_usuario():
     data = request.get_json()
+
     conn = get_conn()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    # Completar con los campos reales de la tabla
-    # Ejemplo para tabla clientes:
-    # cur.execute(
-    #     "INSERT INTO clientes (nombre, email) VALUES (%s, %s) RETURNING *",
-    #     (data["nombre"], data["email"])
-    # )
     cur.execute(
-        "INSERT INTO ??? (???) VALUES (???) RETURNING *",
-        (???)
+        """
+        INSERT INTO usuario (cedula, nombre, telefono, correo, direccion)
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING *
+        """,
+        (
+            data["cedula"],
+            data.get("nombre"),
+            data.get("telefono"),
+            data.get("correo"),
+            data.get("direccion"),
+        )
     )
 
     nuevo = cur.fetchone()
     conn.commit()
     conn.close()
+
     return jsonify(nuevo), 201
 
-
-@app.route("/entidad1/<int:id>", methods=["PUT"])
-def actualizar_entidad1(id):
-    """Actualiza un registro existente por su id."""
+@app.route("/usuarios/<string:cedula>", methods=["PUT"])
+def actualizar_usuario(cedula):
     data = request.get_json()
+
     conn = get_conn()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    # Completar con los campos de la tabla
     cur.execute(
-        "UPDATE ??? SET ??? WHERE id = %s RETURNING *",
-        (???, id)
+        """
+        UPDATE usuario
+        SET nombre = %s,
+            telefono = %s,
+            correo = %s,
+            direccion = %s
+        WHERE cedula = %s
+        RETURNING *
+        """,
+        (
+            data.get("nombre"),
+            data.get("telefono"),
+            data.get("correo"),
+            data.get("direccion"),
+            cedula
+        )
     )
 
     actualizado = cur.fetchone()
@@ -119,36 +129,132 @@ def actualizar_entidad1(id):
     conn.close()
 
     if not actualizado:
-        return jsonify({"error": "???"}), 404
+        return jsonify({"error": "Usuario no encontrado"}), 404
 
     return jsonify(actualizado)
 
-
-@app.route("/entidad1/<int:id>", methods=["DELETE"])
-def eliminar_entidad1(id):
-    """Elimina un registro por su id."""
+@app.route("/usuarios/<string:cedula>", methods=["DELETE"])
+def eliminar_usuario(cedula):
     conn = get_conn()
     cur = conn.cursor()
 
-    # Completar con el nombre de la tabla
-    cur.execute("DELETE FROM ??? WHERE id = %s RETURNING id", (id,))
+    cur.execute(
+        "DELETE FROM usuario WHERE cedula = %s RETURNING cedula",
+        (cedula,)
+    )
 
     eliminado = cur.fetchone()
     conn.commit()
     conn.close()
 
     if not eliminado:
-        return jsonify({"error": "???"}), 404
+        return jsonify({"error": "Usuario no encontrado"}), 404
 
-    return jsonify({"mensaje": f"Registro {id} eliminado correctamente"})
-
+    return jsonify({"mensaje": f"Usuario {cedula} eliminado correctamente"})
 
 # ─────────────────────────────────────────
-# ENTIDAD 2
+# ENTIDAD 2: Lugar
 # ─────────────────────────────────────────
 
-# Implementar CRUD completo para una segunda entidad
-# Seguir la misma estructura de entidad1
+@app.route("/lugares", methods=["GET"])
+def listar_lugares():
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute("SELECT * FROM lugar ORDER BY id")
+
+    lugares = cur.fetchall()
+    conn.close()
+
+    return jsonify(lugares)
+
+
+@app.route("/lugares/<int:id>", methods=["GET"])
+def obtener_lugar(id):
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute("SELECT * FROM lugar WHERE id = %s", (id,))
+    lugar = cur.fetchone()
+
+    conn.close()
+
+    if not lugar:
+        return jsonify({"error": "Lugar no encontrado"}), 404
+
+    return jsonify(lugar)
+
+@app.route("/lugares", methods=["POST"])
+def crear_lugar():
+    data = request.get_json()
+
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute(
+        """
+        INSERT INTO lugar (nombre, tipo)
+        VALUES (%s, %s)
+        RETURNING *
+        """,
+        (data["nombre"], data["tipo"])
+    )
+
+    nuevo = cur.fetchone()
+    conn.commit()
+    conn.close()
+
+    return jsonify(nuevo), 201
+
+@app.route("/lugares/<int:id>", methods=["PUT"])
+def actualizar_lugar(id):
+    data = request.get_json()
+
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute(
+        """
+        UPDATE lugar
+        SET nombre = %s,
+            tipo = %s
+        WHERE id = %s
+        RETURNING *
+        """,
+        (data["nombre"], data["tipo"], id)
+    )
+
+    actualizado = cur.fetchone()
+    conn.commit()
+    conn.close()
+
+    if not actualizado:
+        return jsonify({"error": "Lugar no encontrado"}), 404
+
+    return jsonify(actualizado)
+
+@app.route("/lugares/<int:id>", methods=["DELETE"])
+def eliminar_lugar(id):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "DELETE FROM lugar WHERE id = %s RETURNING id",
+        (id,)
+    )
+
+    eliminado = cur.fetchone()
+    conn.commit()
+    conn.close()
+
+    if not eliminado:
+        return jsonify({"error": "Lugar no encontrado"}), 404
+
+    return jsonify({"mensaje": f"Lugar {id} eliminado correctamente"})
+
+# ─────────────────────────────────────────
+# ENTIDAD 2: Lugar
+# ─────────────────────────────────────────
 
 #Ruta para crear turno, recibe cedula y tipo_lugar, retorna numero de turno y datos del turno creado
 @app.route("/turno", methods=["POST"])
@@ -174,15 +280,15 @@ def crear_turno():
     # Calcular posición por tipo de lugar
     cur.execute(
         """
-        SELECT COUNT(*) as total 
-        FROM turno 
-        WHERE tipo_lugar = %s AND estado = 'pendiente'
+        SELECT COALESCE(MAX(posicion), 0) as max_pos
+        FROM turno
+        WHERE tipo_lugar = %s
         """,
         (tipo_lugar,)
     )
 
-    total = cur.fetchone()["total"]
-    posicion = total + 1
+    max_pos = cur.fetchone()["max_pos"]
+    posicion = max_pos + 1
 
     # Generar número de turno con las primeras 3 letras del tipo de lugar en mayúscula y la posición
     prefijo = tipo_lugar[:3].upper()
@@ -223,6 +329,7 @@ def obtener_tipos_lugar():
 
     return jsonify(tipos)
 
+# Ruta para visualizar turnos en estado "atendiendo" y los siguientes en estado "pendiente", ordenados por tipo de lugar y posición
 @app.route("/turnos/visualizacion", methods=["GET"])
 def visualizar_turnos():
     conn = get_conn()
@@ -287,6 +394,136 @@ def visualizar_turnos():
         "siguientes": siguientes_formateado
     })
 
+@app.route("/lugar/<int:id>/siguiente", methods=["POST"])
+def siguiente_turno(id):
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    # Obtener tipo del lugar
+    cur.execute("SELECT tipo FROM lugar WHERE id = %s", (id,))
+    lugar = cur.fetchone()
+
+    if not lugar:
+        conn.close()
+        return jsonify({"error": "Lugar no encontrado"}), 404
+
+    tipo_lugar = lugar["tipo"]
+
+    # Obtener primer turno pendiente de ese tipo
+    cur.execute("""
+        SELECT *
+        FROM turno
+        WHERE tipo_lugar = %s AND estado = 'pendiente'
+        ORDER BY posicion ASC
+        LIMIT 1
+    """, (tipo_lugar,))
+
+    turno = cur.fetchone()
+
+    if not turno:
+        conn.close()
+        return jsonify({"mensaje": "No hay turnos pendientes"}), 200
+
+    # Actualizar turno → atendiendo + asignar lugar
+    cur.execute("""
+        UPDATE turno
+        SET estado = 'atendiendo',
+            id_lugar = %s
+        WHERE id = %s
+        RETURNING *
+    """, (id, turno["id"]))
+
+    turno_actualizado = cur.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "mensaje": "Turno en atención",
+        "turno": turno_actualizado
+    })
+
+# Ruta para finalizar turno en un lugar específico, cambia estado a "finalizado"
+@app.route("/lugar/<int:id>/finalizar", methods=["POST"])
+def finalizar_turno(id):
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    # Buscar turno en atención en ese lugar
+    cur.execute("""
+        SELECT *
+        FROM turno
+        WHERE id_lugar = %s AND estado = 'atendiendo'
+        LIMIT 1
+    """, (id,))
+
+    turno = cur.fetchone()
+
+    if not turno:
+        conn.close()
+        return jsonify({"mensaje": "No hay turno en atención"}), 200
+
+    # Finalizar turno
+    cur.execute("""
+        UPDATE turno
+        SET estado = 'finalizado'
+        WHERE id = %s
+        RETURNING *
+    """, (turno["id"],))
+
+    turno_finalizado = cur.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "mensaje": "Turno finalizado",
+        "turno": turno_finalizado
+    })
+
+# ─────────────────────────────────────────
+# GETS de prueba
+# ─────────────────────────────────────────
+
+@app.route("/turnos", methods=["GET"])
+def listar_turnos():
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute("""
+        SELECT t.*, u.nombre as usuario, l.nombre as lugar
+        FROM turno t
+        LEFT JOIN usuario u ON t.cedula = u.cedula
+        LEFT JOIN lugar l ON t.id_lugar = l.id
+        ORDER BY t.id
+    """)
+
+    turnos = cur.fetchall()
+    conn.close()
+
+    return jsonify(turnos)
+
+
+@app.route("/turnos/<int:id>", methods=["GET"])
+def obtener_turno(id):
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute("""
+        SELECT t.*, u.nombre as usuario, l.nombre as lugar
+        FROM turno t
+        LEFT JOIN usuario u ON t.cedula = u.cedula
+        LEFT JOIN lugar l ON t.id_lugar = l.id
+        WHERE t.id = %s
+    """, (id,))
+
+    turno = cur.fetchone()
+    conn.close()
+
+    if not turno:
+        return jsonify({"error": "Turno no encontrado"}), 404
+
+    return jsonify(turno)
 # ─────────────────────────────────────────
 # Inicio
 # ─────────────────────────────────────────
