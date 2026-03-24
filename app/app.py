@@ -32,9 +32,50 @@ def index():
     return jsonify({
         "mensaje": "API en funcionamiento",
         "endpoints": {
-            # Listar aquí todos los endpoints que implementes
-            # Ejemplo:
-            # "clientes": "/clientes",
+            # -----------------------------
+            # USUARIOS (CRUD completo)
+            # -----------------------------
+            "usuarios": {
+                "listar": "GET /usuarios",
+                "obtener": "GET /usuarios/<cedula>",
+                "crear": "POST /usuarios",
+                "actualizar": "PUT /usuarios/<cedula>",
+                "eliminar": "DELETE /usuarios/<cedula>"
+            },
+
+            # -----------------------------
+            # LUGARES (CRUD completo)
+            # -----------------------------
+            "lugares": {
+                "listar": "GET /lugares",
+                "obtener": "GET /lugares/<id>",
+                "crear": "POST /lugares",
+                "actualizar": "PUT /lugares/<id>",
+                "eliminar": "DELETE /lugares/<id>"
+            },
+
+            # -----------------------------
+            # TURNOS
+            # -----------------------------
+            "turnos": {
+                "crear_turno": "POST /turno",
+                "listar": "GET /turnos",
+                "obtener": "GET /turnos/<id>",
+                "visualizacion": "GET /turnos/visualizacion"
+            },
+
+            # -----------------------------
+            # LOGICA DE ATENCION
+            # -----------------------------
+            "atencion": {
+                "siguiente_turno": "POST /lugar/<id>/siguiente",
+                "finalizar_turno": "POST /lugar/<id>/finalizar"
+            },
+
+            # -----------------------------
+            # AUXILIARES
+            # -----------------------------
+            "tipos_lugar": "GET /tipos-lugar"
         }
     })
 
