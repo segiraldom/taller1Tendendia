@@ -31,6 +31,16 @@ services:
     networks:
       - red_interna
 
+  frontend:
+    build: ./frontend
+    container_name: frontend_app
+    ports:
+      - "3000:80"
+    depends_on:
+      - web
+    networks:
+      - red_interna
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
