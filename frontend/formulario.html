@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Turnos</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: #666;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    label .required {
+      color: #e74c3c;
+      margin-left: 3px;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #fafafa;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    input[type="text"].error,
+    select.error {
+      border-color: #e74c3c;
+      background: #fff5f5;
+    }
+
+    input[type="text"].valid,
+    select.valid {
+      border-color: #27ae60;
+      background: #f0fff4;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .hint {
+      color: #888;
+      font-size: 0.8rem;
+      margin-top: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+      display: none;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result h3 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .result p {
+      color: #555;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #e0e0e0;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .api-status {
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+    }
+
+    .api-status.error {
+      background: #fff5f5;
+      color: #e74c3c;
+      border: 1px solid #fecaca;
+    }
+
+    .api-status.success {
+      background: #f0fff4;
+      color: #27ae60;
+      border: 1px solid #c6f6d5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Solicitud de Turno</h1>
+  <p class="subtitle">Complete el formulario para generar su turno</p>
+
+  <div id="apiStatus" class="api-status"></div>
+
+  <form id="turnoForm">
+    <div class="form-group">
+      <label for="cedula">
+        Cedula <span class="required">*</span>
+      </label>
+      <input 
+        type="text" 
+        id="cedula" 
+        name="cedula" 
+        placeholder="Ingrese su numero de cedula"
+        maxlength="20"
+        autocomplete="off"
+      >
+      <div id="cedulaError" class="error-message"></div>
+      <div class="hint">Solo se permiten numeros, sin espacios ni caracteres especiales</div>
+    </div>
+
+    <div class="form-group">
+      <label for="tipoLugar">
+        Tipo de Lugar <span class="required">*</span>
+      </label>
+      <select id="tipoLugar" name="tipoLugar">
+        <option value="">Seleccione un tipo de lugar</option>
+      </select>
+      <div id="tipoLugarError" class="error-message"></div>
+      <div id="tipoLugarLoading" class="loading" style="display: none;">Cargando opciones...</div>
+    </div>
+
+    <button type="submit" id="submitBtn">Generar Turno</button>
+  </form>
+
+  <div id="result" class="result">
+    <h3>Turno Generado</h3>
+    <p id="resultContent"></p>
+  </div>
+</div>
+
+<script>
+  const API_URL = 'http://localhost:5000';
+  
+  const cedulaInput = document.getElementById('cedula');
+  const tipoLugarSelect = document.getElementById('tipoLugar');
+  const form = document.getElementById('turnoForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const cedulaError = document.getElementById('cedulaError');
+  const tipoLugarError = document.getElementById('tipoLugarError');
+  const tipoLugarLoading = document.getElementById('tipoLugarLoading');
+  const resultDiv = document.getElementById('result');
+  const resultContent = document.getElementById('resultContent');
+  const apiStatus = document.getElementById('apiStatus');
+
+  // Validar cedula en tiempo real
+  cedulaInput.addEventListener('input', function() {
+    const value = this.value.trim();
+    
+    if (value === '') {
+      setError(this, cedulaError, 'La cedula es requerida');
+    } else if (!/^\d+$/.test(value)) {
+      setError(this, cedulaError, 'La cedula solo puede contener numeros');
+    } else if (value.length < 5) {
+      setError(this, cedulaError, 'La cedula debe tener al menos 5 digitos');
+    } else {
+      setValid(this, cedulaError);
+    }
+  });
+
+  // Validar selector
+  tipoLugarSelect.addEventListener('change', function() {
+    if (this.value === '') {
+      setError(this, tipoLugarError, 'Debe seleccionar un tipo de lugar');
+    } else {
+      setValid(this, tipoLugarError);
+    }
+  });
+
+  function setError(input, errorDiv, message) {
+    input.classList.add('error');
+    input.classList.remove('valid');
+    errorDiv.textContent = message;
+    errorDiv.classList.add('show');
+  }
+
+  function setValid(input, errorDiv) {
+    input.classList.remove('error');
+    input.classList.add('valid');
+    errorDiv.textContent = '';
+    errorDiv.classList.remove('show');
+  }
+
+  // Cargar tipos de lugar desde la API
+  async function cargarTiposLugar() {
+    tipoLugarLoading.style.display = 'block';
+    tipoLugarSelect.style.display = 'none';
+
+    try {
+      const response = await fetch(`${API_URL}/tipos-lugar`);
+      
+      if (!response.ok) {
+        throw new Error('Error al cargar los tipos de lugar');
+      }
+
+      const tipos = await response.json();
+      
+      // Limpiar opciones existentes excepto la primera
+      tipoLugarSelect.innerHTML = '<option value="">Seleccione un tipo de lugar</option>';
+      
+      // Agregar opciones dinamicamente
+      tipos.forEach(tipo => {
+        const option = document.createElement('option');
+        option.value = tipo;
+        option.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+        tipoLugarSelect.appendChild(option);
+      });
+
+      tipoLugarLoading.style.display = 'none';
+      tipoLugarSelect.style.display = 'block';
+      
+      apiStatus.textContent = 'Conexion con API exitosa';
+      apiStatus.className = 'api-status success';
+
+    } catch (error) {
+      tipoLugarLoading.textContent = 'Error al cargar opciones';
+      apiStatus.textContent = 'No se pudo conectar con la API. Verifique que el servidor este ejecutandose.';
+      apiStatus.className = 'api-status error';
+      console.error('Error:', error);
+    }
+  }
+
+  // Manejar envio del formulario
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    // Validar campos
+    let isValid = true;
+
+    const cedulaValue = cedulaInput.value.trim();
+    if (cedulaValue === '') {
+      setError(cedulaInput, cedulaError, 'La cedula es requerida');
+      isValid = false;
+    } else if (!/^\d+$/.test(cedulaValue)) {
+      setError(cedulaInput, cedulaError, 'La cedula solo puede contener numeros');
+      isValid = false;
+    }
+
+    if (tipoLugarSelect.value === '') {
+      setError(tipoLugarSelect, tipoLugarError, 'Debe seleccionar un tipo de lugar');
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
+    // Deshabilitar boton mientras se procesa
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Generando...';
+
+    try {
+      const response = await fetch(`${API_URL}/turno`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          cedula: cedulaValue,
+          tipo_lugar: tipoLugarSelect.value
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        resultContent.innerHTML = `
+          <strong>Numero de turno:</strong> ${data.turno}<br>
+          <strong>Mensaje:</strong> ${data.mensaje}<br>
+          <strong>Cedula:</strong> ${data.datos.cedula}<br>
+          <strong>Tipo:</strong> ${data.datos.tipo_lugar}<br>
+          <strong>Posicion:</strong> ${data.datos.posicion}<br>
+          <strong>Estado:</strong> ${data.datos.estado}
+        `;
+        resultDiv.classList.add('show');
+        
+        // Limpiar formulario
+        cedulaInput.value = '';
+        cedulaInput.classList.remove('valid', 'error');
+        tipoLugarSelect.value = '';
+        tipoLugarSelect.classList.remove('valid', 'error');
+      } else {
+        resultContent.textContent = data.error || 'Error al generar el turno';
+        resultDiv.classList.add('show');
+      }
+
+    } catch (error) {
+      resultContent.textContent = 'Error de conexion. Verifique que la API este ejecutandose.';
+      resultDiv.classList.add('show');
+      console.error('Error:', error);
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Generar Turno';
+  });
+
+  // Cargar tipos de lugar al iniciar la pagina
+  cargarTiposLugar();
+</script>
+
+</body>
+</html>
