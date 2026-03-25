@@ -3,164 +3,694 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Cambiar el título por el nombre de tu sistema -->
-  <title>Sistema ???</title>
+  <title>Sistema de Turnos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* ── Reset básico ── */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #1e3a5f;
+      --primary-light: #2c5282;
+      --secondary: #3182ce;
+      --accent: #48bb78;
+      --danger: #e53e3e;
+      --warning: #ed8936;
+      --bg-light: #f7fafc;
+      --bg-white: #ffffff;
+      --text-dark: #2d3748;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      font-family: sans-serif;
-      background: #f4f6f8;
-      color: #333;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      min-height: 100vh;
     }
 
     /* ── Header ── */
     header {
-      background: #2c3e50;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
       color: white;
       padding: 1rem 2rem;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
 
-    /* Personalizar el color del header con los colores de tu sistema */
-    header h1 {
-      font-size: 1.3rem;
-      font-weight: 500;
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    /* ── Navegación por secciones ── */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo i {
+      font-size: 1.75rem;
+    }
+
+    .logo h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    /* ── Navigation ── */
     nav {
-      background: #34495e;
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
       display: flex;
       gap: 0.5rem;
-      padding: 0.5rem 2rem;
     }
 
     nav button {
       background: none;
       border: none;
-      color: #bdc3c7;
-      padding: 0.5rem 1rem;
+      color: var(--text-muted);
+      padding: 1rem 1.5rem;
       cursor: pointer;
-      border-radius: 4px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    nav button.active,
     nav button:hover {
-      background: #2c3e50;
-      color: white;
+      color: var(--secondary);
+      background: var(--bg-light);
     }
 
-    /* ── Contenido principal ── */
-    main { padding: 2rem; }
+    nav button.active {
+      color: var(--secondary);
+      border-bottom-color: var(--secondary);
+    }
 
+    /* ── Main Content ── */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ── Toolbar ── */
     .toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    .toolbar h2 { font-size: 1.1rem; font-weight: 500; }
+    .toolbar h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-    /* ── Botones ── */
+    .toolbar-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* ── Buttons ── */
     .btn {
-      padding: 0.5rem 1rem;
+      padding: 0.625rem 1.25rem;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .btn-primary  { background: #2980b9; color: white; }
-    .btn-danger   { background: #e74c3c; color: white; }
-    .btn-secondary{ background: #ecf0f1; color: #333;  }
-    .btn-sm       { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+    .btn-primary {
+      background: var(--secondary);
+      color: white;
+    }
 
-    /* ── Tabla ── */
+    .btn-primary:hover {
+      background: #2b6cb0;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-success {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #38a169;
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c53030;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-light);
+      color: var(--text-dark);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-lg {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+    }
+
+    /* ── Table ── */
+    .table-container {
+      background: var(--bg-white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }
 
     th {
-      background: #ecf0f1;
+      background: var(--bg-light);
       text-align: left;
-      padding: 0.75rem 1rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #555;
+      padding: 1rem 1.25rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border);
     }
 
     td {
-      padding: 0.75rem 1rem;
-      border-top: 1px solid #f0f0f0;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
       font-size: 0.9rem;
     }
 
-    tr:hover td { background: #fafafa; }
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-pendiente {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-atendiendo {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-finalizado {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-consulta {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .badge-medicamentos {
+      background: #fce7f3;
+      color: #9d174d;
+    }
+
+    .badge-administrativo {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .badge-laboratorio {
+      background: #ccfbf1;
+      color: #115e59;
+    }
 
     /* ── Modal ── */
     .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0, 0, 0, 0.5);
       justify-content: center;
       align-items: center;
       z-index: 100;
+      backdrop-filter: blur(4px);
     }
 
-    .modal-overlay.open { display: flex; }
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
 
     .modal {
-      background: white;
-      border-radius: 10px;
-      padding: 1.5rem;
+      background: var(--bg-white);
+      border-radius: 16px;
+      padding: 1.75rem;
       width: 100%;
-      max-width: 460px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      max-width: 500px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
     }
 
-    .modal h3 { margin-bottom: 1rem; font-size: 1rem; font-weight: 500; }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
 
-    /* ── Formulario ── */
-    .form-group { margin-bottom: 0.9rem; }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--danger);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Form ── */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
 
     .form-group label {
       display: block;
-      font-size: 0.82rem;
-      color: #555;
-      margin-bottom: 0.3rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
       width: 100%;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       font-size: 0.9rem;
+      transition: all 0.2s ease;
+      background: var(--bg-white);
     }
 
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-      margin-top: 1rem;
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
     }
 
+    .form-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* ── Empty State ── */
     .empty {
       text-align: center;
-      padding: 3rem;
-      color: #aaa;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+    }
+
+    .empty i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    .empty p {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Visualización de Turnos (Pantalla TV) ── */
+    .visualizacion-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .turno-panel {
+      background: var(--bg-white);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .turno-panel h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .turno-card {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-light) 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(49, 130, 206, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(49, 130, 206, 0); }
+    }
+
+    .turno-numero {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .turno-info {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .turno-info i {
+      width: 20px;
+      margin-right: 0.5rem;
+    }
+
+    .siguiente-card {
+      background: var(--bg-light);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .siguiente-numero {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .siguiente-usuario {
       font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Panel de Atención ── */
+    .atencion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .lugar-card {
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .lugar-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .lugar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .lugar-nombre {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .lugar-tipo {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .lugar-estado {
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg-light);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .lugar-turno-actual {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .lugar-usuario-actual {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .lugar-sin-turno {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .lugar-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .lugar-actions .btn {
+      flex: 1;
+      justify-content: center;
+    }
+
+    /* ── Stats Cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .stat-icon.blue {
+      background: #dbeafe;
+      color: var(--secondary);
+    }
+
+    .stat-icon.green {
+      background: #d1fae5;
+      color: var(--accent);
+    }
+
+    .stat-icon.orange {
+      background: #fef3c7;
+      color: var(--warning);
+    }
+
+    .stat-icon.red {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .stat-info h4 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .stat-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+      }
+
+      .header-info {
+        display: none;
+      }
+
+      nav {
+        padding: 0 1rem;
+        overflow-x: auto;
+      }
+
+      nav button {
+        padding: 0.75rem 1rem;
+        white-space: nowrap;
+      }
+
+      main {
+        padding: 1rem;
+      }
+
+      .visualizacion-container {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbar-actions {
+        justify-content: stretch;
+      }
+
+      .toolbar-actions .btn {
+        flex: 1;
+        justify-content: center;
+      }
     }
   </style>
 </head>
@@ -168,33 +698,57 @@
 
 <!-- ── Header ── -->
 <header>
-  <!-- Cambiar el título y agregar un ícono representativo -->
-  <h1>??? Sistema</h1>
+  <div class="header-content">
+    <div class="logo">
+      <i class="fas fa-ticket-alt"></i>
+      <h1>Sistema de Turnos</h1>
+    </div>
+    <div class="header-info">
+      <span><i class="fas fa-clock"></i> <span id="reloj"></span></span>
+      <span><i class="fas fa-calendar"></i> <span id="fecha"></span></span>
+    </div>
+  </div>
 </header>
 
-<!-- ── Navegación ── -->
+<!-- ── Navigation ── -->
 <nav>
-  <!--
-    Agregar un botón por cada entidad de tu sistema.
-    Ejemplo:
-    <button onclick="cambiarSeccion('clientes')"  id="tab-clientes">Clientes</button>
-    <button onclick="cambiarSeccion('productos')" id="tab-productos">Productos</button>
-  -->
-  <button onclick="cambiarSeccion('entidad1')" id="tab-entidad1">Entidad 1</button>
-  <button onclick="cambiarSeccion('entidad2')" id="tab-entidad2">Entidad 2</button>
+  <div class="nav-container">
+    <button onclick="cambiarSeccion('usuarios')" id="tab-usuarios">
+      <i class="fas fa-users"></i> Usuarios
+    </button>
+    <button onclick="cambiarSeccion('lugares')" id="tab-lugares">
+      <i class="fas fa-building"></i> Lugares
+    </button>
+    <button onclick="cambiarSeccion('turnos')" id="tab-turnos">
+      <i class="fas fa-list-ol"></i> Turnos
+    </button>
+    <button onclick="cambiarSeccion('atencion')" id="tab-atencion">
+      <i class="fas fa-headset"></i> Atención
+    </button>
+    <button onclick="cambiarSeccion('visualizacion')" id="tab-visualizacion">
+      <i class="fas fa-tv"></i> Visualización
+    </button>
+  </div>
 </nav>
 
-<!-- ── Contenido dinámico ── -->
+<!-- ── Main Content ── -->
 <main id="contenido"></main>
 
-<!-- ── Modal genérico ── -->
+<!-- ── Modal ── -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
-    <h3 id="modal-titulo"></h3>
+    <div class="modal-header">
+      <h3 id="modal-titulo"><i class="fas fa-plus-circle"></i> <span id="modal-titulo-texto"></span></h3>
+      <button class="modal-close" onclick="cerrarModal()">&times;</button>
+    </div>
     <div id="modal-cuerpo"></div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-      <button class="btn btn-primary"   onclick="guardar()">Guardar</button>
+      <button class="btn btn-secondary" onclick="cerrarModal()">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button class="btn btn-primary" onclick="guardar()">
+        <i class="fas fa-save"></i> Guardar
+      </button>
     </div>
   </div>
 </div>
@@ -204,11 +758,29 @@
   // Configuración
   // ─────────────────────────────────────────
 
-  // Verificar que el puerto coincida con el expuesto en docker-compose.yml
   const API = 'http://localhost:5000';
 
   let seccionActual = '';
-  let modoEdicion   = null;
+  let modoEdicion = null;
+  let datosCache = {};
+
+  // ─────────────────────────────────────────
+  // Reloj y Fecha
+  // ─────────────────────────────────────────
+
+  function actualizarReloj() {
+    const ahora = new Date();
+    document.getElementById('reloj').textContent = ahora.toLocaleTimeString('es-CO');
+    document.getElementById('fecha').textContent = ahora.toLocaleDateString('es-CO', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  setInterval(actualizarReloj, 1000);
+  actualizarReloj();
 
   // ─────────────────────────────────────────
   // Navegación
@@ -222,11 +794,30 @@
   }
 
   async function cargarDatos() {
-    // Si alguna sección necesita datos previos (ej: un select de clientes
-    // para el formulario de reservas), cargarlos aquí antes de renderizar.
+    const contenido = document.getElementById('contenido');
 
-    const data = await fetch(`${API}/${seccionActual}`).then(r => r.json());
-    renderTabla(data);
+    if (seccionActual === 'visualizacion') {
+      cargarVisualizacion();
+      return;
+    }
+
+    if (seccionActual === 'atencion') {
+      cargarAtencion();
+      return;
+    }
+
+    try {
+      const data = await fetch(`${API}/${seccionActual}`).then(r => r.json());
+      datosCache[seccionActual] = data;
+      renderTabla(data);
+    } catch (error) {
+      contenido.innerHTML = `
+        <div class="empty">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Error al conectar con el servidor</p>
+          <p style="font-size: 0.9rem; color: var(--text-muted);">Verifica que la API esté ejecutándose en ${API}</p>
+        </div>`;
+    }
   }
 
   // ─────────────────────────────────────────
@@ -234,50 +825,286 @@
   // ─────────────────────────────────────────
 
   function renderTabla(data) {
+    const contenido = document.getElementById('contenido');
+
     if (!data.length) {
-      document.getElementById('contenido').innerHTML = `
+      contenido.innerHTML = `
         <div class="toolbar">
-          <h2>${seccionActual}</h2>
-          <button class="btn btn-primary" onclick="abrirModal()">+ Nuevo</button>
+          <h2><i class="${getIconoSeccion()}"></i> ${getTituloSeccion()}</h2>
+          <div class="toolbar-actions">
+            <button class="btn btn-primary" onclick="abrirModal()">
+              <i class="fas fa-plus"></i> Nuevo Registro
+            </button>
+          </div>
         </div>
-        <div class="empty">No hay registros aún.</div>`;
+        <div class="empty">
+          <i class="fas fa-inbox"></i>
+          <p>No hay registros aún</p>
+          <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Crear el primero
+          </button>
+        </div>`;
       return;
     }
 
-    const cols = Object.keys(data[0]);
+    const cols = Object.keys(data[0]).filter(c => c !== 'id' || seccionActual === 'lugares');
 
     const filas = data.map(row => `
       <tr>
         ${cols.map(c => `<td>${renderCelda(c, row[c])}</td>`).join('')}
         <td>
-          <button class="btn btn-primary btn-sm"
-            onclick='abrirModal(${JSON.stringify(row)})'>Editar</button>
-          <button class="btn btn-danger btn-sm"
-            onclick="eliminar(${row.id})">Eliminar</button>
+          <div class="actions">
+            <button class="btn btn-primary btn-sm" onclick='abrirModal(${JSON.stringify(row)})'>
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="eliminar('${row.cedula || row.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
         </td>
       </tr>`).join('');
 
-    document.getElementById('contenido').innerHTML = `
+    contenido.innerHTML = `
       <div class="toolbar">
-        <h2>${seccionActual}</h2>
-        <button class="btn btn-primary" onclick="abrirModal()">+ Nuevo</button>
+        <h2><i class="${getIconoSeccion()}"></i> ${getTituloSeccion()}</h2>
+        <div class="toolbar-actions">
+          <button class="btn btn-secondary" onclick="cargarDatos()">
+            <i class="fas fa-sync-alt"></i> Actualizar
+          </button>
+          <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nuevo Registro
+          </button>
+        </div>
       </div>
-      <table>
-        <thead>
-          <tr>${cols.map(c => `<th>${c}</th>`).join('')}<th></th></tr>
-        </thead>
-        <tbody>${filas}</tbody>
-      </table>`;
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              ${cols.map(c => `<th>${formatearColumna(c)}</th>`).join('')}
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>${filas}</tbody>
+        </table>
+      </div>`;
   }
 
   function renderCelda(col, val) {
-    // Personalizar el render de celdas especiales.
-    // Ejemplo para estados con badges de color:
-    // if (col === 'estado') return `<span class="badge badge-${val}">${val}</span>`;
-
     if (val === null || val === undefined) return '—';
-    if (typeof val === 'boolean') return val ? 'Sí' : 'No';
+    if (typeof val === 'boolean') return val ? '<i class="fas fa-check" style="color: var(--accent)"></i>' : '<i class="fas fa-times" style="color: var(--danger)"></i>';
+
+    if (col === 'estado') {
+      return `<span class="badge badge-${val}">${val}</span>`;
+    }
+
+    if (col === 'tipo' || col === 'tipo_lugar') {
+      return `<span class="badge badge-${val}">${val}</span>`;
+    }
+
+    if (col === 'fecha') {
+      return new Date(val).toLocaleString('es-CO');
+    }
+
     return val;
+  }
+
+  function formatearColumna(col) {
+    const nombres = {
+      cedula: 'Cédula',
+      nombre: 'Nombre',
+      telefono: 'Teléfono',
+      correo: 'Correo',
+      direccion: 'Dirección',
+      tipo: 'Tipo',
+      tipo_lugar: 'Tipo de Lugar',
+      id_lugar: 'Lugar',
+      posicion: 'Posición',
+      fecha: 'Fecha',
+      estado: 'Estado',
+      lugar: 'Lugar',
+      usuario: 'Usuario'
+    };
+    return nombres[col] || col.charAt(0).toUpperCase() + col.slice(1);
+  }
+
+  function getTituloSeccion() {
+    const titulos = {
+      usuarios: 'Gestión de Usuarios',
+      lugares: 'Gestión de Lugares',
+      turnos: 'Gestión de Turnos'
+    };
+    return titulos[seccionActual] || seccionActual;
+  }
+
+  function getIconoSeccion() {
+    const iconos = {
+      usuarios: 'fas fa-users',
+      lugares: 'fas fa-building',
+      turnos: 'fas fa-list-ol'
+    };
+    return iconos[seccionActual] || 'fas fa-list';
+  }
+
+  // ─────────────────────────────────────────
+  // Atención
+  // ─────────────────────────────────────────
+
+  async function cargarAtencion() {
+    const contenido = document.getElementById('contenido');
+
+    try {
+      const lugares = await fetch(`${API}/lugares`).then(r => r.json());
+      const turnos = await fetch(`${API}/turnos`).then(r => r.json());
+
+      const turnosPorLugar = {};
+      turnos.forEach(t => {
+        if (t.id_lugar && t.estado === 'atendiendo') {
+          turnosPorLugar[t.id_lugar] = t;
+        }
+      });
+
+      contenido.innerHTML = `
+        <div class="toolbar">
+          <h2><i class="fas fa-headset"></i> Panel de Atención</h2>
+          <div class="toolbar-actions">
+            <button class="btn btn-secondary" onclick="cargarDatos()">
+              <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+          </div>
+        </div>
+        <div class="atencion-grid">
+          ${lugares.map(lugar => {
+            const turnoActual = turnosPorLugar[lugar.id];
+            return `
+              <div class="lugar-card">
+                <div class="lugar-header">
+                  <div>
+                    <div class="lugar-nombre">${lugar.nombre}</div>
+                    <div class="lugar-tipo"><span class="badge badge-${lugar.tipo}">${lugar.tipo}</span></div>
+                  </div>
+                </div>
+                <div class="lugar-estado">
+                  ${turnoActual
+                    ? `<div class="lugar-turno-actual">${formatearTurno(turnoActual.tipo_lugar, turnoActual.posicion)}</div>
+                       <div class="lugar-usuario-actual"><i class="fas fa-user"></i> ${turnoActual.usuario || 'N/A'}</div>`
+                    : `<div class="lugar-sin-turno"><i class="fas fa-pause-circle"></i> Sin atención</div>`
+                  }
+                </div>
+                <div class="lugar-actions">
+                  <button class="btn btn-success btn-sm" onclick="llamarSiguiente(${lugar.id})">
+                    <i class="fas fa-forward"></i> Siguiente
+                  </button>
+                  <button class="btn btn-danger btn-sm" onclick="finalizarTurno(${lugar.id})" ${!turnoActual ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                    <i class="fas fa-check"></i> Finalizar
+                  </button>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>`;
+    } catch (error) {
+      contenido.innerHTML = `
+        <div class="empty">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Error al cargar el panel de atención</p>
+        </div>`;
+    }
+  }
+
+  async function llamarSiguiente(idLugar) {
+    try {
+      const response = await fetch(`${API}/lugar/${idLugar}/siguiente`, { method: 'POST' });
+      const data = await response.json();
+
+      if (data.mensaje === 'No hay turnos pendientes') {
+        alert('No hay turnos pendientes para este tipo de lugar');
+      }
+
+      cargarDatos();
+    } catch (error) {
+      alert('Error al llamar siguiente turno');
+    }
+  }
+
+  async function finalizarTurno(idLugar) {
+    try {
+      await fetch(`${API}/lugar/${idLugar}/finalizar`, { method: 'POST' });
+      cargarDatos();
+    } catch (error) {
+      alert('Error al finalizar turno');
+    }
+  }
+
+  function formatearTurno(tipo, posicion) {
+    const prefijo = tipo.substring(0, 3).toUpperCase();
+    return `${prefijo}-${posicion}`;
+  }
+
+  // ─────────────────────────────────────────
+  // Visualización (Pantalla TV)
+  // ─────────────────────────────────────────
+
+  async function cargarVisualizacion() {
+    const contenido = document.getElementById('contenido');
+
+    try {
+      const data = await fetch(`${API}/turnos/visualizacion`).then(r => r.json());
+
+      contenido.innerHTML = `
+        <div class="toolbar">
+          <h2><i class="fas fa-tv"></i> Visualización de Turnos</h2>
+          <div class="toolbar-actions">
+            <button class="btn btn-secondary" onclick="cargarDatos()">
+              <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+          </div>
+        </div>
+        <div class="visualizacion-container">
+          <div class="turno-panel">
+            <h3><i class="fas fa-user-check"></i> En Atención</h3>
+            ${data.atendiendo.length
+              ? data.atendiendo.map(t => `
+                  <div class="turno-card">
+                    <div class="turno-numero">${t.turno}</div>
+                    <div class="turno-info">
+                      <div><i class="fas fa-user"></i> ${t.usuario || 'Sin nombre'}</div>
+                      <div><i class="fas fa-map-marker-alt"></i> ${t.lugar || 'Sin asignar'}</div>
+                    </div>
+                  </div>
+                `).join('')
+              : '<div class="empty"><i class="fas fa-coffee"></i><p>No hay turnos en atención</p></div>'
+            }
+          </div>
+          <div class="turno-panel">
+            <h3><i class="fas fa-hourglass-half"></i> Próximos Turnos</h3>
+            ${data.siguientes.length
+              ? data.siguientes.map(t => `
+                  <div class="siguiente-card">
+                    <div>
+                      <div class="siguiente-numero">${t.turno}</div>
+                      <div class="siguiente-usuario">${t.usuario || 'Sin nombre'}</div>
+                    </div>
+                    <i class="fas fa-arrow-right" style="color: var(--text-muted)"></i>
+                  </div>
+                `).join('')
+              : '<div class="empty"><i class="fas fa-check-double"></i><p>No hay turnos pendientes</p></div>'
+            }
+          </div>
+        </div>`;
+
+      // Auto-refresh cada 10 segundos para visualización
+      setTimeout(() => {
+        if (seccionActual === 'visualizacion') {
+          cargarVisualizacion();
+        }
+      }, 10000);
+
+    } catch (error) {
+      contenido.innerHTML = `
+        <div class="empty">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Error al cargar la visualización</p>
+        </div>`;
+    }
   }
 
   // ─────────────────────────────────────────
@@ -286,8 +1113,8 @@
 
   function abrirModal(row = null) {
     modoEdicion = row;
-    document.getElementById('modal-titulo').textContent =
-      row ? `Editar registro` : `Nuevo registro`;
+    const titulo = row ? 'Editar Registro' : 'Nuevo Registro';
+    document.getElementById('modal-titulo-texto').textContent = titulo;
     document.getElementById('modal-cuerpo').innerHTML = formulario(row);
     document.getElementById('modal').classList.add('open');
   }
@@ -298,31 +1125,65 @@
   }
 
   function formulario(row) {
-    // Construir el formulario para cada sección.
-    // Usar los campos reales de las tablas.
-    // Ejemplo:
-    // if (seccionActual === 'clientes') return `
-    //   <div class="form-group">
-    //     <label>Nombre</label>
-    //     <input id="f-nombre" value="${row ? row.nombre : ''}">
-    //   </div>
-    //   <div class="form-group">
-    //     <label>Email</label>
-    //     <input id="f-email" type="email" value="${row ? row.email : ''}">
-    //   </div>`;
+    if (seccionActual === 'usuarios') {
+      return `
+        <div class="form-group">
+          <label><i class="fas fa-id-card"></i> Cédula</label>
+          <input id="f-cedula" value="${row ? row.cedula : ''}" ${row ? 'readonly' : ''} placeholder="Ej: 1234567890">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-user"></i> Nombre Completo</label>
+          <input id="f-nombre" value="${row ? row.nombre ?? '' : ''}" placeholder="Ej: Juan Pérez">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-phone"></i> Teléfono</label>
+          <input id="f-telefono" value="${row ? row.telefono ?? '' : ''}" placeholder="Ej: 3001234567">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-envelope"></i> Correo Electrónico</label>
+          <input id="f-correo" type="email" value="${row ? row.correo ?? '' : ''}" placeholder="Ej: correo@ejemplo.com">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
+          <input id="f-direccion" value="${row ? row.direccion ?? '' : ''}" placeholder="Ej: Calle 123 #45-67">
+        </div>`;
+    }
 
-    if (seccionActual === 'entidad1') return `
-      <div class="form-group">
-        <label>Campo 1</label>
-        <input id="f-campo1" value="${row ? row.campo1 ?? '' : ''}">
-      </div>
-      <div class="form-group">
-        <label>Campo 2</label>
-        <input id="f-campo2" value="${row ? row.campo2 ?? '' : ''}">
-      </div>`;
+    if (seccionActual === 'lugares') {
+      return `
+        <div class="form-group">
+          <label><i class="fas fa-building"></i> Nombre del Lugar</label>
+          <input id="f-nombre" value="${row ? row.nombre ?? '' : ''}" placeholder="Ej: Consultorio 1">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-tag"></i> Tipo</label>
+          <select id="f-tipo">
+            <option value="consulta" ${row?.tipo === 'consulta' ? 'selected' : ''}>Consulta</option>
+            <option value="medicamentos" ${row?.tipo === 'medicamentos' ? 'selected' : ''}>Medicamentos</option>
+            <option value="administrativo" ${row?.tipo === 'administrativo' ? 'selected' : ''}>Administrativo</option>
+            <option value="laboratorio" ${row?.tipo === 'laboratorio' ? 'selected' : ''}>Laboratorio</option>
+          </select>
+        </div>`;
+    }
 
-    // Agregar formulario para entidad2 y demás secciones
-    return `<p>Formulario pendiente para: ${seccionActual}</p>`;
+    if (seccionActual === 'turnos') {
+      return `
+        <div class="form-group">
+          <label><i class="fas fa-id-card"></i> Cédula del Usuario</label>
+          <input id="f-cedula" placeholder="Ej: 1234567890">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-tag"></i> Tipo de Lugar</label>
+          <select id="f-tipo-lugar">
+            <option value="consulta">Consulta</option>
+            <option value="medicamentos">Medicamentos</option>
+            <option value="administrativo">Administrativo</option>
+            <option value="laboratorio">Laboratorio</option>
+          </select>
+        </div>`;
+    }
+
+    return '<p>Formulario no disponible</p>';
   }
 
   // ─────────────────────────────────────────
@@ -332,47 +1193,80 @@
   function leerFormulario() {
     const v = id => document.getElementById(id)?.value;
 
-    // Retornar el objeto con los campos de cada sección.
-    // Ejemplo:
-    // if (seccionActual === 'clientes')
-    //   return { nombre: v('f-nombre'), email: v('f-email') };
+    if (seccionActual === 'usuarios') {
+      return {
+        cedula: v('f-cedula'),
+        nombre: v('f-nombre'),
+        telefono: v('f-telefono'),
+        correo: v('f-correo'),
+        direccion: v('f-direccion')
+      };
+    }
 
-    if (seccionActual === 'entidad1')
-      return { campo1: v('f-campo1'), campo2: v('f-campo2') };
+    if (seccionActual === 'lugares') {
+      return {
+        nombre: v('f-nombre'),
+        tipo: v('f-tipo')
+      };
+    }
+
+    if (seccionActual === 'turnos') {
+      return {
+        cedula: v('f-cedula'),
+        tipo_lugar: v('f-tipo-lugar')
+      };
+    }
 
     return {};
   }
 
   async function guardar() {
-    const body   = leerFormulario();
-    const url    = modoEdicion
-      ? `${API}/${seccionActual}/${modoEdicion.id}`
-      : `${API}/${seccionActual}`;
-    const method = modoEdicion ? 'PUT' : 'POST';
+    const body = leerFormulario();
 
-    await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
+    try {
+      if (seccionActual === 'turnos') {
+        // Los turnos se crean con endpoint especial
+        await fetch(`${API}/turno`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+      } else {
+        const url = modoEdicion
+          ? `${API}/${seccionActual}/${modoEdicion.cedula || modoEdicion.id}`
+          : `${API}/${seccionActual}`;
+        const method = modoEdicion ? 'PUT' : 'POST';
 
-    cerrarModal();
-    cargarDatos();
+        await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+      }
+
+      cerrarModal();
+      cargarDatos();
+    } catch (error) {
+      alert('Error al guardar: ' + error.message);
+    }
   }
 
   async function eliminar(id) {
-    if (!confirm('¿Confirmas que deseas eliminar este registro?')) return;
+    if (!confirm('¿Estás seguro de que deseas eliminar este registro?')) return;
 
-    await fetch(`${API}/${seccionActual}/${id}`, { method: 'DELETE' });
-    cargarDatos();
+    try {
+      await fetch(`${API}/${seccionActual}/${id}`, { method: 'DELETE' });
+      cargarDatos();
+    } catch (error) {
+      alert('Error al eliminar');
+    }
   }
 
   // ─────────────────────────────────────────
-  // Inicio — cargar la primera sección
+  // Inicio
   // ─────────────────────────────────────────
 
-  // Cambiar 'entidad1' por el nombre de tu primera sección real
-  cambiarSeccion('entidad1');
+  cambiarSeccion('usuarios');
 </script>
 </body>
 </html>
