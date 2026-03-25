@@ -40,6 +40,11 @@ INSERT INTO usuario VALUES
 ('1003', 'Carlos Ruiz', '3003456789', 'carlos@mail.com', 'Calle 3'),
 ('1004', 'Ana Torres', '3004567890', 'ana@mail.com', 'Calle 4'),
 ('1005', 'Luis Martinez', '3005678901', 'luis@mail.com', 'Calle 5');
+('1006', 'Pedro Lopez', '3006789012', 'pedro@mail.com', 'Calle 6'),
+('1007', 'Laura Diaz', '3007890123', 'laura@mail.com', 'Calle 7'),
+('1008', 'Andres Silva', '3008901234', 'andres@mail.com', 'Calle 8'),
+('1009', 'Sofia Rojas', '3009012345', 'sofia@mail.com', 'Calle 9'),
+('1010', 'Diego Castro', '3000123456', 'diego@mail.com', 'Calle 10');
 
 --------------------------------------------------
 -- INSERTS LUGAR
@@ -56,9 +61,14 @@ INSERT INTO lugar (nombre, tipo) VALUES
 -- INSERTS TURNO
 --------------------------------------------------
 
-INSERT INTO turno (cedula, tipo_lugar, posicion, fecha, estado) VALUES
-('1001', 'consulta', 1, NOW(), 'pendiente'),
-('1002', 'consulta', 2, NOW(), 'pendiente'),
-('1003', 'medicamentos', 1, NOW(), 'atendiendo'),
-('1004', 'administrativo', 1, NOW(), 'finalizado'),
+INSERT INTO turno (cedula, tipo_lugar, id_lugar posicion, fecha, estado) VALUES
+('1001', 'consulta', NULL, 1, NOW(), 'pendiente'),
+('1002', 'consulta', NULL, 2, NOW(), 'pendiente'),
+('1003', 'medicamentos', 3, 1, NOW(), 'atendiendo'),
+('1004', 'administrativo', 4, 1, NOW(), 'finalizado'),
 ('1005', 'consulta', 3, NOW(), 'pendiente');
+('1006', 'consulta', 1, 4, NOW(), 'atendiendo'),
+('1007', 'consulta', 2, 5, NOW(), 'finalizado'),
+('1008', 'medicamentos', NULL, 2, NOW(), 'pendiente'),
+('1009', 'administrativo', NULL, 2, NOW(), 'pendiente'),
+('1010', 'laboratorio', 5, 1, NOW(), 'atendiendo');
