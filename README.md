@@ -10,7 +10,7 @@ El proyecto está construido con una arquitectura de tres capas que se comunican
 
 **Capa de Presentación (Frontend)**
 - Archivo HTML estático con CSS y JavaScript
-- Se abre directamente desde el sistema de archivos local
+- Servido mediante contenedor Nginx en http://localhost:3000
 - Se conecta a la API mediante peticiones HTTP (fetch)
 
 **Capa de Negocio (Backend)**
@@ -26,7 +26,7 @@ El proyecto está construido con una arquitectura de tres capas que se comunican
 
 **Infraestructura**
 - Docker Compose para orquestación de servicios
-- Tres contenedores: PostgreSQL, Flask y pgAdmin
+- Cuatro contenedores: PostgreSQL, Flask, pgAdmin y Frontend (Nginx)
 - Red interna para comunicación entre servicios
 - Volúmenes persistentes para datos de la base de datos
 
@@ -65,7 +65,8 @@ taller1Tendendia/
 │       └── 01-init.sql        # Script de inicialización de base de datos
 ├── frontend/
 │   ├── index.html             # Interfaz de usuario completa
-│   └── Dockerfile             # Definición de imagen (no utilizado actualmente)
+│   ├── formulario.html        # Formulario para solicitar turnos
+│   └── Dockerfile             # Definición de imagen para el frontend (Nginx)
 ├── documentacion/
 │   └── diagramaBD.png         # Diagrama entidad-relación de la base de datos
 ├── docker-compose.yml         # Configuración de orquestación de servicios
@@ -130,10 +131,11 @@ docker-compose up -d
 docker-compose ps
 ```
 
-Deberías ver tres contenedores ejecutándose:
+Deberías ver cuatro contenedores ejecutándose:
 - postgres_db (estado: healthy)
 - flask_app (estado: Up)
 - pgadmin (estado: Up)
+- frontend_app (estado: Up)
 
 ## Ejecución
 
@@ -141,28 +143,16 @@ Deberías ver tres contenedores ejecutándose:
 
 Una vez completada la instalación, los servicios estarán disponibles en:
 
+- Frontend: http://localhost:3000
 - API Flask: http://localhost:5000
 - pgAdmin: http://localhost:8080
 
 **Acceder al frontend:**
 
-El frontend es un archivo HTML que debe abrirse directamente desde tu sistema de archivos:
+El frontend está servido mediante un contenedor Nginx. Simplemente abre tu navegador en:
 
-1. Abre el explorador de archivos de tu sistema
-2. Navega a la carpeta del proyecto
-3. Ingresa a la carpeta `frontend/`
-4. Haz doble clic en el archivo `index.html`
-
-Alternativamente, desde la terminal:
-```bash
-# En Windows
-start frontend/index.html
-
-# En macOS
-open frontend/index.html
-
-# En Linux
-xdg-open frontend/index.html
+```
+http://localhost:3000
 ```
 
 **Acceder a pgAdmin:**
@@ -292,7 +282,7 @@ La API REST expone los siguientes endpoints:
 **El frontend no se conecta a la API:**
 - Verifica que los contenedores estén ejecutándose con `docker-compose ps`
 - Verifica que la API responda accediendo a http://localhost:5000
-- Asegúrate de abrir el frontend desde el sistema de archivos, no desde un servidor web
+- Asegúrate de acceder al frontend en http://localhost:3000
 
 **Error de CORS:**
 - El backend ya tiene CORS habilitado
