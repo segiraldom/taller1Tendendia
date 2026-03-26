@@ -67,7 +67,7 @@ taller1Tendendia/
 │   ├── index.html             # Interfaz de usuario completa
 │   ├── formulario.html        # Formulario para solicitar turnos
 │   └── Dockerfile             # Definición de imagen para el frontend (Nginx)
-├── documentacion/
+├── documentacion/             #Carpeta en al que se encuentra evidencia sobre el funcionamiento del sistema
 │   └── diagramaBD.png         # Diagrama entidad-relación de la base de datos
 ├── docker-compose.yml         # Configuración de orquestación de servicios
 ├── .env                       # Variables de entorno (credenciales de BD)
@@ -137,6 +137,8 @@ Deberías ver cuatro contenedores ejecutándose:
 - pgadmin (estado: Up)
 - frontend_app (estado: Up)
 
+![Evidencia de contenedores](documentacion/contenedores.png)
+
 ## Ejecución
 
 **Iniciar el sistema:**
@@ -154,6 +156,7 @@ El frontend está servido mediante un contenedor Nginx. Simplemente abre tu nave
 ```
 http://localhost:3000
 ```
+![Evidencia del front funcionando](documentacion/front.png)
 
 **Acceder a pgAdmin:**
 
@@ -163,6 +166,7 @@ pgAdmin es una herramienta web para administrar la base de datos PostgreSQL:
 2. Inicia sesión con:
    - Correo: admin@mail.com
    - Contraseña: admin
+![Evidencia de login de pgAdmin](documentacion/login_pgadmin.png)
 3. Registra un nuevo servidor PostgreSQL:
    - Host: db
    - Puerto: 5432
@@ -172,36 +176,48 @@ pgAdmin es una herramienta web para administrar la base de datos PostgreSQL:
 
 ## Uso del Sistema
 
-El frontend presenta cinco secciones principales accesibles desde la barra de navegación:
+El frontend presenta cinco secciones principales accesibles desde la barra de navegación y un boton solicitar turno:
 
 **Sección Usuarios:**
 - Lista todos los usuarios registrados
 - Permite crear nuevos usuarios con cédula, nombre, teléfono, correo y dirección
 - Permite editar información de usuarios existentes
 - Permite eliminar usuarios del sistema
+![Evidencia sección usuarios](documentacion/usuarios.png)
 
 **Sección Lugares:**
 - Muestra todos los lugares de atención configurados
 - Permite crear nuevos lugares con nombre y tipo (consulta, medicamentos, administrativo, laboratorio)
 - Permite editar lugares existentes
 - Permite eliminar lugares
+![Evidencia sección lugares](documentacion/lugares.png)
 
 **Sección Turnos:**
 - Lista todos los turnos generados con su estado actual
 - Permite crear nuevos turnos indicando la cédula del usuario y el tipo de lugar
 - El sistema asigna automáticamente un número de turno basado en el tipo y posición en la cola
+![Evidencia sección turnos](documentacion/turnos.png)
 
 **Sección Atención:**
 - Presenta un panel con todas las tarjetas de lugares
 - Muestra el turno que está siendo atendido en cada lugar
 - Permite llamar al siguiente turno pendiente para un lugar específico
 - Permite finalizar el turno actual y pasar al siguiente
+![Evidencia sección atención](documentacion/atencion.png)
 
 **Sección Visualización:**
 - Diseñada para mostrarse en pantallas grandes o televisores
 - Muestra en tiempo real los turnos que están siendo atendidos
 - Muestra los próximos turnos en cola
 - Se actualiza automáticamente cada 10 segundos
+![Evidencia sección visualización](documentacion/visualizacion.png)
+
+**Sección Visualización:**
+- Boton solicitar turno el cual manda a un formulario
+![Evidencia de boton](documentacion/boton.png)
+- Formulario en el que se pide la cedula del usuario y el lugar que necesita ir
+- Genera el turno y lo muestra en pantalla
+![Evidencia del formulario](documentacion/formulario.png)
 
 ## Comandos de Docker Compose
 
